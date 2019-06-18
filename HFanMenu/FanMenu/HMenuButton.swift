@@ -56,7 +56,7 @@ public class HMenuButton: UIView {
 		frame.size = size
 		imageView.image = image
 		
-		let sizeImage = CGSize(width: frame.size.width , height: frame.size.height)
+		let sizeImage = CGSize(width: frame.size.width, height: frame.size.height)
 		imageView.frame.size = sizeImage
 		imageView.center = center
 		

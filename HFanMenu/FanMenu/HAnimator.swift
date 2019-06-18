@@ -35,23 +35,26 @@ struct HAnimator {
 		UIView.animate(
 			withDuration: duration,
 			delay: delay,
-			usingSpringWithDamping: springWithDamping,
-			initialSpringVelocity: springVelocity,
-			options: .curveEaseInOut,
+			usingSpringWithDamping: 1,
+			initialSpringVelocity: 0.5,
+			options: [.curveEaseInOut],
 			animations: animation,
 			completion: completion)
 	}
 	
 	
 	
-	func showItems(items: [HMenuItem], completion: (()->Void)?) {
+	func showItems(items: [HMenuItem], labels: [UILabel], completion: (()->Void)?) {
 		var delay: TimeInterval = 0
-		items.forEach { button in
+		items.enumerated().forEach { index, button in
 			animation(delay: delay, animation: {
 				button.center = button.endPosition ?? CGPoint.zero
 				button.alpha = 1.0
+				labels[index].frame.origin = CGPoint(
+					x: button.endPosition!.x - labels[index].bounds.width,
+					y: button.endPosition!.y - button.bounds.height)
+				labels[index].alpha = 1.0
 			}, completion: { isFinish in
-				// TODO: handle completion here
 			})
 			delay += 0.2
 		}
@@ -59,14 +62,15 @@ struct HAnimator {
 	
 	
 	
-	func hideItems(items: [HMenuItem], completion: (() -> ())?) {
+	func hideItems(items: [HMenuItem], labels: [UILabel], completion: (() -> ())?) {
 		var delay: TimeInterval = 0
-		items.forEach { button in
+		items.enumerated().forEach { index, button in
 			animation(delay: delay, animation: {
 				button.center = button.startPosition ?? CGPoint.zero
 				button.alpha = 0.0
+				labels[index].frame.origin = button.startPosition ?? CGPoint.zero
+				labels[index].alpha = 0.0
 			}, completion: { isFinish in
-				// TODO: handle completion here
 			})
 			delay += 0.2
 		}

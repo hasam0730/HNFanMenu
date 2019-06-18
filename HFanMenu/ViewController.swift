@@ -8,19 +8,35 @@
 
 import UIKit
 
+
+struct MenuItem {
+	var title: String
+	var image: String
+}
+
 class ViewController: UIViewController {
 
 	var menuView: HMenuView!
 	var isShow = false
+	let menuItems: [MenuItem] = [MenuItem(title: "nguyen trung hieu", image: "ico-create-report"),
+								 MenuItem(title: "trung", image: "ico-my-reports"),
+								 MenuItem(title: "hieu", image: "ico-near-reports")]
+	
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		let menuButton = HMainButton(image: UIImage(named:"menu")!.withRenderingMode(.alwaysOriginal), selectedImage: UIImage(named: "close"), size: CGSize(width: 50, height: 50))
-		let animator = HAnimator(duration: 0.5, springWithDamping: 0.5, springVelocity: 0.5)
-		menuView = HMenuView(parentView: view, mainButon: menuButton, animator: animator, isClockWise: true, radius: 130)
+		let menuButton = HMainButton(
+			image: UIImage(named:"ico-plus")!.withRenderingMode(.alwaysOriginal),
+			selectedImage: UIImage(named: "ico-close"),
+			size: CGSize(width: 50, height: 50))
+		let animator = HAnimator(duration: 0.4, springWithDamping: 0.5, springVelocity: 0.5)
+		
+		
+		menuView = HMenuView(parentView: view, mainButon: menuButton, animator: animator, isClockWise: true, radius: 110)
 		menuView.delegate = self
 		menuView.datasource = self
-		menuView.setHomeButtonPosition(position: CGPoint(x: view.center.x, y: view.center.y - 100))
+		menuView.setHomeButtonPosition(position: CGPoint(x: view.bounds.width - 50, y: view.center.y - 100))
 	}
 }
 
@@ -31,17 +47,25 @@ extension ViewController: HMenuDatasource {
 	
 	
 	func numberOfItems() -> Int {
-		return 3
+		return menuItems.count
 	}
 
 
 
 	func menuView(_ menuView: HMenuView, menuItemAtIndex index: Int) -> HMenuItem {
-		let subMenuButton = HMenuItem(tagNumber: index, image: UIImage(named:"\(index)")!, size: CGSize(width: 60, height: 60))
-		subMenuButton.backgroundColor = UIColor.init(red: 243/255.0, green: 156/255.0, blue: 18/255.0, alpha: 1)
-		subMenuButton.layer.cornerRadius = subMenuButton.frame.height / 2
+		let subMenuButton = HMenuItem(tagNumber: index, image: UIImage(named: menuItems[index].image)!, size: CGSize(width: 60, height: 60))
+		subMenuButton.backgroundColor = .clear
 		subMenuButton.layer.masksToBounds = true
 		return subMenuButton
+	}
+	
+	
+	
+	func menuView(_ menuView: HMenuView, menuLabelAtIndex index: Int) -> UILabel {
+		let label = UILabel()
+		label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+		label.text = menuItems[index].title
+		return label
 	}
 }
 

@@ -22,6 +22,7 @@ public protocol HMenuDatasource: class {
 	
 	func numberOfItems() -> Int
 	func menuView(_ menuView: HMenuView, menuItemAtIndex index: Int) -> HMenuItem
+	func menuView(_ menuView: HMenuView, menuLabelAtIndex index: Int) -> UILabel
 }
 
 
@@ -31,6 +32,7 @@ public class HMenuView {
 	private var parentView: UIView?
 	private var mainButton: HMainButton?
 	private var menuItems: [HMenuItem]? = []
+	private var menuItemLabel: [UILabel]? = []
 	private var animator: HAnimator?
 	
 	var datasource: HMenuDatasource?
@@ -43,10 +45,13 @@ public class HMenuView {
 	private(set) var state: HMenuViewState = .none {
 		didSet {
 			guard let menuItems = menuItems,
-				let mainButton = mainButton else { return }
-			state == .expand
-			? animator?.showItems(items: menuItems, completion: nil)
-			: animator?.hideItems(items: menuItems, completion: nil)
+				let mainButton = mainButton,
+				let labels = menuItemLabel else { return }
+			if state == .expand {
+				animator?.showItems(items: menuItems, labels: labels, completion: nil)
+			} else {
+				animator?.hideItems(items: menuItems, labels: labels, completion: nil)
+			}
 			animator?.animateMainButton(button: mainButton, state: state, completion: nil)
 			mainButton.markButtonAsSelected(isSelected: state == .expand)
 		}
@@ -131,6 +136,11 @@ public class HMenuView {
 			parentView?.bringSubviewToFront(button)
 			menuItems?.append(button)
 			
+			let label = datasource!.menuView(self, menuLabelAtIndex: i)
+			label.sizeToFit()
+			menuItemLabel?.append(label)
+			parentView?.bringSubviewToFront(label)
+			parentView?.addSubview(label)
 		}
 	}
 	
@@ -151,19 +161,21 @@ public class HMenuView {
 		menuItems?.forEach { (item) in
 			var x = 0.0
 			var y = 0.0
-			x = Double(center.x) + sin(Double(index) * theta) * radius * flip
-			y = Double(center.y) - cos(Double(index) * theta) * radius
+			x = Double(center.x) - cos(Double(index) * theta) * radius * flip
+			y = Double(center.y) - sin(Double(index) * theta) * radius
 			
 			item.center = center
 			item.startPosition = center
 			item.endPosition = CGPoint(x: x, y: y)
 			
-			let label = UILabel(frame: CGRect(origin: item.l!, size: CGSize(width: 100, height: 30)))
-			label.text = "asdadad"
-			parentView?.addSubview(label)llllllllllllllllllllllllll
-			
 			item.tag = index
 			item.alpha = 0
+			
+			if let label = menuItemLabel?[index] {
+				label.frame.origin = CGPoint(x: item.endPosition!.x - label.bounds.width, y: item.endPosition!.y)
+				label.alpha = 0.0
+			}
+			
 			index += 1
 		}
 		
