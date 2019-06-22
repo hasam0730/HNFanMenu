@@ -10,6 +10,14 @@ import UIKit
 
 
 
+public enum HMenuViewState {
+	
+	case none
+	case expand
+}
+
+
+
 public protocol HMenuDelegate: class {
 	
 	func menuView(_ menuView: HMenuView, didTapMainButton: HMainButton, state: HMenuViewState)
@@ -29,29 +37,30 @@ public protocol HMenuDatasource: class {
 
 public class HMenuView {
 	
-	private var parentView: UIView?
+	private var supperView: UIView?
 	private var mainButton: HMainButton?
-	private var menuItems: [HMenuItem]? = []
-	private var menuItemLabel: [UILabel]? = []
+	private var subButtons: [HMenuItem]? = []
+	private var subLabels: [UILabel]? = []
 	private var animator: HAnimator?
+	
+	public var isClockWise = true
+	public var radius: Double = 100
 	
 	var datasource: HMenuDatasource?
 	var delegate: HMenuDelegate?
-	public var isClockWise = true // Default is clockwise
-	public var radius: Double = 100 // Default radius
 	
 	
 	
 	private(set) var state: HMenuViewState = .none {
 		didSet {
-			guard let menuItems = menuItems,
-				let mainButton = mainButton,
-				let labels = menuItemLabel else { return }
-			if state == .expand {
-				animator?.showItems(items: menuItems, labels: labels, completion: nil)
-			} else {
-				animator?.hideItems(items: menuItems, labels: labels, completion: nil)
-			}
+			guard let mainButton = mainButton,
+				let menuItems = subButtons,
+				let labels = subLabels else { return }
+			
+			state == .expand
+			? animator?.showItems(items: menuItems, labels: labels, completion: nil)
+			: animator?.hideItems(items: menuItems, labels: labels, completion: nil)
+			
 			animator?.animateMainButton(button: mainButton, state: state, completion: nil)
 			mainButton.markButtonAsSelected(isSelected: state == .expand)
 		}
@@ -64,7 +73,7 @@ public class HMenuView {
 		 animator: HAnimator,
 		 isClockWise: Bool,
 		 radius: Double) {
-		self.parentView = parentView
+		self.supperView = parentView
 		self.mainButton = mainButon
 		self.animator = animator
 		self.isClockWise = isClockWise
@@ -96,13 +105,10 @@ public class HMenuView {
 	
 	
 	fileprivate func setUpHomeButton() {
-		guard let parentView = parentView else {
-			return
-		}
+		guard let parentView = supperView else { return }
 		setUpDefaultHomeButtonPosition()
 		mainButton?.delegate = self
 		mainButton?.backgroundColor = .green
-		mainButton?.frame.size = CGSize(width: 50, height: 50)
 		parentView.addSubview(mainButton!)
 		parentView.bringSubviewToFront(mainButton!)
 	}
@@ -110,9 +116,7 @@ public class HMenuView {
 	
 	
 	fileprivate func setUpDefaultHomeButtonPosition() {
-		guard let parentView = parentView else {
-			return
-		}
+		guard let parentView = supperView else { return }
 		mainButton?.center = parentView.center
 	}
 	
@@ -132,23 +136,23 @@ public class HMenuView {
 		for i in 0..<numberOfItem {
 			let button = datasource!.menuView(self, menuItemAtIndex: i)
 			button.delegate = self
-			parentView?.addSubview(button)
-			parentView?.bringSubviewToFront(button)
-			menuItems?.append(button)
+			supperView?.addSubview(button)
+			supperView?.bringSubviewToFront(button)
+			subButtons?.append(button)
 			
 			let label = datasource!.menuView(self, menuLabelAtIndex: i)
 			label.sizeToFit()
-			menuItemLabel?.append(label)
-			parentView?.bringSubviewToFront(label)
-			parentView?.addSubview(label)
+			subLabels?.append(label)
+			supperView?.bringSubviewToFront(label)
+			supperView?.addSubview(label)
 		}
 	}
 	
 	
 	
 	private func removeButton() {
-		let _ =  menuItems?.map { $0.removeFromSuperview() }
-		menuItems?.removeAll()
+		let _ =  subButtons?.map { $0.removeFromSuperview() }
+		subButtons?.removeAll()
 	}
 	
 	
@@ -158,7 +162,7 @@ public class HMenuView {
 		let flip: Double = isClockWise ? 1 : -1
 		var index = 0
 		let center = CGPoint(x: mainButton!.frame.midX, y: mainButton!.frame.midY)
-		menuItems?.forEach { (item) in
+		subButtons?.forEach { (item) in
 			var x = 0.0
 			var y = 0.0
 			x = Double(center.x) - cos(Double(index) * theta) * radius * flip
@@ -171,7 +175,7 @@ public class HMenuView {
 			item.tag = index
 			item.alpha = 0
 			
-			if let label = menuItemLabel?[index] {
+			if let label = subLabels?[index] {
 				label.frame.origin = CGPoint(x: item.endPosition!.x - label.bounds.width, y: item.endPosition!.y)
 				label.alpha = 0.0
 			}
@@ -196,7 +200,7 @@ public class HMenuView {
 	
 	
 	
-	public func setHomeButtonPosition(position: CGPoint) {
+	open func setHomeButtonPosition(position: CGPoint) {
 		mainButton?.center = position
 		reloadButton()
 	}
@@ -210,7 +214,7 @@ extension HMenuView: HMenuButtonDelegate {
 	
 	func menuButton(_ button: HMenuButton) {
 		if let subMenuButton = button as? HMenuItem,
-			let indexOfItem = menuItems?.index(of: subMenuButton) {
+			let indexOfItem = subButtons?.index(of: subMenuButton) {
 			state = .none
 			delegate?.menuView(self, didTapMenuItemAtIndex: indexOfItem)
 		} else {

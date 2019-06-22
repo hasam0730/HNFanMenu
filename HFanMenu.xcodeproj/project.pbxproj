@@ -12,10 +12,9 @@
 		8BFA32DE22B5E5750081A919 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BFA32DC22B5E5750081A919 /* Main.storyboard */; };
 		8BFA32E022B5E5760081A919 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BFA32DF22B5E5760081A919 /* Assets.xcassets */; };
 		8BFA32E322B5E5770081A919 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BFA32E122B5E5770081A919 /* LaunchScreen.storyboard */; };
-		8BFA32EC22B5E5950081A919 /* HAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFA32EB22B5E5950081A919 /* HAnimator.swift */; };
-		8BFA32EE22B5F0700081A919 /* HMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFA32ED22B5F0700081A919 /* HMenuButton.swift */; };
-		8BFA32F022B604820081A919 /* HMenuButtonState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFA32EF22B604820081A919 /* HMenuButtonState.swift */; };
-		8BFA32F222B613AF0081A919 /* HMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFA32F122B613AF0081A919 /* HMenuView.swift */; };
+		8BFA32EC22B5E5950081A919 /* WTAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFA32EB22B5E5950081A919 /* WTAnimator.swift */; };
+		8BFA32EE22B5F0700081A919 /* WTFanMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFA32ED22B5F0700081A919 /* WTFanMenuButton.swift */; };
+		8BFA32F222B613AF0081A919 /* WTFanMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFA32F122B613AF0081A919 /* WTFanMenuView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,10 +25,9 @@
 		8BFA32DF22B5E5760081A919 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8BFA32E222B5E5770081A919 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8BFA32E422B5E5770081A919 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8BFA32EB22B5E5950081A919 /* HAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HAnimator.swift; sourceTree = "<group>"; };
-		8BFA32ED22B5F0700081A919 /* HMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HMenuButton.swift; sourceTree = "<group>"; };
-		8BFA32EF22B604820081A919 /* HMenuButtonState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HMenuButtonState.swift; sourceTree = "<group>"; };
-		8BFA32F122B613AF0081A919 /* HMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HMenuView.swift; sourceTree = "<group>"; };
+		8BFA32EB22B5E5950081A919 /* WTAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WTAnimator.swift; sourceTree = "<group>"; };
+		8BFA32ED22B5F0700081A919 /* WTFanMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WTFanMenuButton.swift; sourceTree = "<group>"; };
+		8BFA32F122B613AF0081A919 /* WTFanMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WTFanMenuView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,10 +74,9 @@
 		8BFA32EA22B5E57E0081A919 /* FanMenu */ = {
 			isa = PBXGroup;
 			children = (
-				8BFA32EB22B5E5950081A919 /* HAnimator.swift */,
-				8BFA32ED22B5F0700081A919 /* HMenuButton.swift */,
-				8BFA32EF22B604820081A919 /* HMenuButtonState.swift */,
-				8BFA32F122B613AF0081A919 /* HMenuView.swift */,
+				8BFA32EB22B5E5950081A919 /* WTAnimator.swift */,
+				8BFA32ED22B5F0700081A919 /* WTFanMenuButton.swift */,
+				8BFA32F122B613AF0081A919 /* WTFanMenuView.swift */,
 			);
 			path = FanMenu;
 			sourceTree = "<group>";
@@ -155,11 +152,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BFA32F022B604820081A919 /* HMenuButtonState.swift in Sources */,
 				8BFA32DB22B5E5750081A919 /* ViewController.swift in Sources */,
-				8BFA32F222B613AF0081A919 /* HMenuView.swift in Sources */,
-				8BFA32EE22B5F0700081A919 /* HMenuButton.swift in Sources */,
-				8BFA32EC22B5E5950081A919 /* HAnimator.swift in Sources */,
+				8BFA32F222B613AF0081A919 /* WTFanMenuView.swift in Sources */,
+				8BFA32EE22B5F0700081A919 /* WTFanMenuButton.swift in Sources */,
+				8BFA32EC22B5E5950081A919 /* WTAnimator.swift in Sources */,
 				8BFA32D922B5E5750081A919 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

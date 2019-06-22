@@ -35,8 +35,8 @@ struct HAnimator {
 		UIView.animate(
 			withDuration: duration,
 			delay: delay,
-			usingSpringWithDamping: 1,
-			initialSpringVelocity: 0.5,
+			usingSpringWithDamping: springWithDamping,
+			initialSpringVelocity: springVelocity,
 			options: [.curveEaseInOut],
 			animations: animation,
 			completion: completion)
@@ -78,7 +78,7 @@ struct HAnimator {
 	
 	
 	
-	func animateMainButton(button: HMainButton, state: HMenuViewState, completion: (() -> ())?) {
+	func animateMainButton(button: HMainButton, state: WTFanMenuState, completion: (() -> ())?) {
 		let scale: CGFloat = state == .expand ? 1.0 : 0.9
 		let transform = CGAffineTransform(scaleX: scale, y: scale)
 		animation(delay: 0, animation: {
