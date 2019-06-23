@@ -16,44 +16,57 @@ struct MenuItem {
 
 class ViewController: UIViewController {
 
-	var menuView: HMenuView!
+	var menuView: WTMenuHandler!
 	var isShow = false
-	let menuItems: [MenuItem] = [MenuItem(title: "nguyen trung hieu", image: "ico-create-report"),
-								 MenuItem(title: "trung", image: "ico-my-reports"),
-								 MenuItem(title: "hieu", image: "ico-near-reports")]
+	let menuItems: [MenuItem] = [
+		MenuItem(title: "hieu", image: "ico-create-report"),
+		MenuItem(title: "hieu", image: "ico-my-reports"),
+		MenuItem(title: "hieu", image: "ico-near-reports")
+	]
 	
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		let menuButton = HMainButton(
+		let menuButton = WTMainButton(
 			image: UIImage(named:"ico-plus")!.withRenderingMode(.alwaysOriginal),
-			selectedImage: UIImage(named: "ico-close"),
-			size: CGSize(width: 50, height: 50))
-		let animator = HAnimator(duration: 0.4, springWithDamping: 0.5, springVelocity: 0.5)
+			expandedImage: UIImage(named: "ico-close"),
+			frame: CGRect(origin: view.center, size: CGSize(width: 60, height: 60)))
 		
+		let animator = HAnimator(
+			duration: 0.4,
+			springWithDamping: 0.6,
+			springVelocity: 0.5)
 		
-		menuView = HMenuView(parentView: view, mainButon: menuButton, animator: animator, isClockWise: true, radius: 110)
+		menuView = WTMenuHandler(
+			parentView: view,
+			mainButon: menuButton,
+			animator: animator,
+			isClockWise: true,
+			radius: 110)
+		
 		menuView.delegate = self
 		menuView.datasource = self
-		menuView.setHomeButtonPosition(position: CGPoint(x: view.bounds.width - 50, y: view.center.y - 100))
 	}
 }
 
 
 
-extension ViewController: HMenuDatasource {
+extension ViewController: WTMenuDatasource {
 
 	
 	
-	func numberOfItems() -> Int {
+	func numberOfSubButtons() -> Int {
 		return menuItems.count
 	}
 
 
 
-	func menuView(_ menuView: HMenuView, menuItemAtIndex index: Int) -> HMenuItem {
-		let subMenuButton = HMenuItem(tagNumber: index, image: UIImage(named: menuItems[index].image)!, size: CGSize(width: 60, height: 60))
+	func fanMenu(_ menuHandler: WTMenuHandler, menuItemAtIndex index: Int) -> WTSubButton {
+		let subMenuButton = WTSubButton(
+			tagNumber: index,
+			image: UIImage(named: menuItems[index].image)!,
+			frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 60, height: 60)))
 		subMenuButton.backgroundColor = .clear
 		subMenuButton.layer.masksToBounds = true
 		return subMenuButton
@@ -61,7 +74,7 @@ extension ViewController: HMenuDatasource {
 	
 	
 	
-	func menuView(_ menuView: HMenuView, menuLabelAtIndex index: Int) -> UILabel {
+	func fanMenu(_ menuHandler: WTMenuHandler, menuLabelAtIndex index: Int) -> UILabel {
 		let label = UILabel()
 		label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
 		label.text = menuItems[index].title
@@ -69,18 +82,18 @@ extension ViewController: HMenuDatasource {
 	}
 }
 
-extension ViewController: HMenuDelegate {
+extension ViewController: WTMenuDelegate {
 	
 	
 	
-	func menuView(_ menuView: HMenuView, didTapMenuItemAtIndex index: Int) {
+	func fanMenu(_ menuHandler: WTMenuHandler, didTapMenuItemAtIndex index: Int) {
 		
 	}
 	
 	
 	
 	
-	func menuView(_ menuView: HMenuView, didTapMainButton: HMainButton, state: HMenuViewState) {
+	func fanMenu(_ menuHandler: WTMenuHandler, didTapMainButton: WTMainButton, state: WTFanMenuState) {
 		
 	}
 }

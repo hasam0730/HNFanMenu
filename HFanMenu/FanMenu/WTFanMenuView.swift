@@ -1,5 +1,5 @@
 //
-//  HMenuView.swift
+//  WTMenuHandler.swift
 //  HFanMenu
 //
 //  Created by Developer on 6/16/19.
@@ -10,162 +10,120 @@ import UIKit
 
 
 
-public enum HMenuViewState {
+public enum WTFanMenuState {
 	
-	case none
-	case expand
+	case normal
+	case expanded
 }
 
 
 
-public protocol HMenuDelegate: class {
+public protocol WTMenuDelegate: class {
 	
-	func menuView(_ menuView: HMenuView, didTapMainButton: HMainButton, state: HMenuViewState)
-	func menuView(_ menuView: HMenuView, didTapMenuItemAtIndex index: Int)
+	func fanMenu(_ menuHandler: WTMenuHandler, didTapMainButton: WTMainButton, state: WTFanMenuState)
+	func fanMenu(_ menuHandler: WTMenuHandler, didTapMenuItemAtIndex index: Int)
 }
 
 
 
-public protocol HMenuDatasource: class {
+public protocol WTMenuDatasource: class {
 	
-	func numberOfItems() -> Int
-	func menuView(_ menuView: HMenuView, menuItemAtIndex index: Int) -> HMenuItem
-	func menuView(_ menuView: HMenuView, menuLabelAtIndex index: Int) -> UILabel
+	func numberOfSubButtons() -> Int
+	func fanMenu(_ menuHandler: WTMenuHandler, menuItemAtIndex index: Int) -> WTSubButton
+	func fanMenu(_ menuHandler: WTMenuHandler, menuLabelAtIndex index: Int) -> UILabel
 }
 
 
 
-public class HMenuView {
+public class WTMenuHandler {
 	
-	private var supperView: UIView?
-	private var mainButton: HMainButton?
-	private var subButtons: [HMenuItem]? = []
-	private var subLabels: [UILabel]? = []
+	private var supperView: UIView
+	private var mainButton: WTMainButton
+	private var subButtons: [WTSubButton] = []
+	private var subLabels: [UILabel] = []
 	private var animator: HAnimator?
-	
-	public var isClockWise = true
-	public var radius: Double = 100
-	
-	var datasource: HMenuDatasource?
-	var delegate: HMenuDelegate?
+	private var radius: Double = 100
 	
 	
 	
-	private(set) var state: HMenuViewState = .none {
+	weak var delegate: WTMenuDelegate?
+
+
+
+	weak var datasource: WTMenuDatasource? {
 		didSet {
-			guard let mainButton = mainButton,
-				let menuItems = subButtons,
-				let labels = subLabels else { return }
-			
-			state == .expand
-			? animator?.showItems(items: menuItems, labels: labels, completion: nil)
-			: animator?.hideItems(items: menuItems, labels: labels, completion: nil)
-			
-			animator?.animateMainButton(button: mainButton, state: state, completion: nil)
-			mainButton.markButtonAsSelected(isSelected: state == .expand)
+			setupSubButtons()
 		}
 	}
 	
 	
 	
-	init(parentView: UIView,
-		 mainButon: HMainButton?,
-		 animator: HAnimator,
-		 isClockWise: Bool,
-		 radius: Double) {
+	private(set) var state: WTFanMenuState = .normal {
+		didSet {
+			state == .expanded
+			? animator?.showSubButtons(buttons: subButtons, labels: subLabels, completion: nil)
+			: animator?.hideSubButtons(buttons: subButtons, labels: subLabels, completion: nil)
+			
+			animator?.animateMainButton(button: mainButton, state: state, completion: nil)
+			mainButton.markButtonAsSelected(isSelected: state == .expanded)
+		}
+	}
+	
+	
+	
+	init(
+		parentView: UIView,
+		mainButon: WTMainButton,
+		animator: HAnimator = HAnimator(),
+		isClockWise: Bool,
+		radius: Double) {
+		self.state = .normal
 		self.supperView = parentView
 		self.mainButton = mainButon
 		self.animator = animator
-		self.isClockWise = isClockWise
 		self.radius = radius
-		setup()
+		setUpMainButton()
 	}
 	
 	
 	
-	convenience public init(
-		parentView: UIView,
-		mainButton: HMainButton,
-		radius: Double = 100,
-		isClockWise: Bool = true) {
-		self.init(
-			parentView: parentView,
-			mainButon: mainButton,
-			animator: HAnimator(),
-			isClockWise: true,
-			radius: radius)
+	private func setUpMainButton() {
+		mainButton.delegate = self
+		supperView.addSubview(mainButton)
+		supperView.bringSubviewToFront(mainButton)
 	}
 	
 	
 	
-	private func setup() {
-		setUpHomeButton()
-	}
-	
-	
-	
-	fileprivate func setUpHomeButton() {
-		guard let parentView = supperView else { return }
-		setUpDefaultHomeButtonPosition()
-		mainButton?.delegate = self
-		mainButton?.backgroundColor = .green
-		parentView.addSubview(mainButton!)
-		parentView.bringSubviewToFront(mainButton!)
-	}
-	
-	
-	
-	fileprivate func setUpDefaultHomeButtonPosition() {
-		guard let parentView = supperView else { return }
-		mainButton?.center = parentView.center
-	}
-	
-	
-	
-	public func reloadButton() {
-		state = .none
-		removeButton()
-		addButton()
-		layoutButton()
-	}
-	
-	
-	
-	private func addButton() {
-		guard let numberOfItem = datasource?.numberOfItems() else { return }
-		for i in 0..<numberOfItem {
-			let button = datasource!.menuView(self, menuItemAtIndex: i)
+	private func setupSubButtons() {
+		guard let numberOfSubButtons = datasource?.numberOfSubButtons() else { return }
+		for i in 0..<numberOfSubButtons {
+			let button = datasource!.fanMenu(self, menuItemAtIndex: i)
 			button.delegate = self
-			supperView?.addSubview(button)
-			supperView?.bringSubviewToFront(button)
-			subButtons?.append(button)
+			supperView.addSubview(button)
+			supperView.bringSubviewToFront(button)
+			subButtons.append(button)
 			
-			let label = datasource!.menuView(self, menuLabelAtIndex: i)
+			let label = datasource!.fanMenu(self, menuLabelAtIndex: i)
 			label.sizeToFit()
-			subLabels?.append(label)
-			supperView?.bringSubviewToFront(label)
-			supperView?.addSubview(label)
+			subLabels.append(label)
+			supperView.bringSubviewToFront(label)
+			supperView.addSubview(label)
 		}
+		layoutSubButtons()
 	}
 	
 	
 	
-	private func removeButton() {
-		let _ =  subButtons?.map { $0.removeFromSuperview() }
-		subButtons?.removeAll()
-	}
-	
-	
-	
-	private func layoutButton() {
+	private func layoutSubButtons() {
 		let theta = getTheta()
-		let flip: Double = isClockWise ? 1 : -1
 		var index = 0
-		let center = CGPoint(x: mainButton!.frame.midX, y: mainButton!.frame.midY)
-		subButtons?.forEach { (item) in
+		let center = CGPoint(x: mainButton.frame.midX, y: mainButton.frame.midY)
+		subButtons.forEach { (item) in
 			var x = 0.0
 			var y = 0.0
-			x = Double(center.x) - cos(Double(index) * theta) * radius * flip
+			
+			x = Double(center.x) - cos(Double(index) * theta) * radius
 			y = Double(center.y) - sin(Double(index) * theta) * radius
 			
 			item.center = center
@@ -175,51 +133,37 @@ public class HMenuView {
 			item.tag = index
 			item.alpha = 0
 			
-			if let label = subLabels?[index] {
-				label.frame.origin = CGPoint(x: item.endPosition!.x - label.bounds.width, y: item.endPosition!.y)
-				label.alpha = 0.0
-			}
+			let label = subLabels[index]
+			label.frame.origin = CGPoint(x: item.endPosition!.x - label.bounds.width, y: item.endPosition!.y)
+			label.alpha = 0.0
 			
 			index += 1
 		}
-		
 	}
 	
 	
 	
 	private func getTheta() -> Double {
-		let numberItem: Double = Double(datasource!.numberOfItems() == 0 ? 1 : datasource!.numberOfItems() - 1)
-		return .pi / 2 / numberItem
-	}
-	
-	
-	
-	private func setHomeButtonImage(pressed: Bool) {
-		mainButton?.markButtonAsSelected(isSelected: pressed)
-	}
-	
-	
-	
-	open func setHomeButtonPosition(position: CGPoint) {
-		mainButton?.center = position
-		reloadButton()
+		guard let datasource = datasource else { return .pi / 2 }
+		let numberOfSubButtons: Double = Double(max(datasource.numberOfSubButtons() - 1, 1))
+		return .pi / 2 / numberOfSubButtons
 	}
 }
 
 
 
-extension HMenuView: HMenuButtonDelegate {
+extension WTMenuHandler: WTMenuButtonDelegate {
 
 
-	
-	func menuButton(_ button: HMenuButton) {
-		if let subMenuButton = button as? HMenuItem,
-			let indexOfItem = subButtons?.index(of: subMenuButton) {
-			state = .none
-			delegate?.menuView(self, didTapMenuItemAtIndex: indexOfItem)
+
+	func menuButton(_ button: WTMenuButton) {
+		if let subMenuButton = button as? WTSubButton,
+			let indexOfItem = subButtons.index(of: subMenuButton) {
+			state = .normal
+			delegate?.fanMenu(self, didTapMenuItemAtIndex: indexOfItem)
 		} else {
-			state = state == .none ? .expand : .none
-			delegate?.menuView(self, didTapMainButton: button as! HMainButton, state: state)
+			state = state == .normal ? .expanded : .normal
+			delegate?.fanMenu(self, didTapMainButton: button as! WTMainButton, state: state)
 		}
 	}
 }

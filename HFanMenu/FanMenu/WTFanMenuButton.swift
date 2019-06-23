@@ -1,5 +1,5 @@
 //
-//  HMenuButton.swift
+//  WTMenuButton.swift
 //  HFanMenu
 //
 //  Created by Developer on 6/16/19.
@@ -10,17 +10,17 @@ import UIKit
 
 
 
-protocol HMenuButtonDelegate: class {
+protocol WTMenuButtonDelegate: class {
 	
-	func menuButton(_ button: HMenuButton)
+	func menuButton(_ button: WTMenuButton)
 }
 
 
 
 @objcMembers
-public class HMenuButton: UIView {
+public class WTMenuButton: UIView {
 	
-	weak var delegate: HMenuButtonDelegate?
+	weak var delegate: WTMenuButtonDelegate?
 
 
 
@@ -40,32 +40,16 @@ public class HMenuButton: UIView {
 	
 	
 	
-	var size: CGSize? {
-		didSet {
-			guard let size = size else { return }
-			frame.size = size
-		}
-	}
-	
-	
-	
-	init(image: UIImage, size: CGSize = CGSize(width: 50, height: 50)) {
-		super.init(frame: CGRect.zero)
-		self.image = image
-		self.size = size
-		frame.size = size
-		imageView.image = image
+	init(image: UIImage, frame: CGRect) {
+		super.init(frame: frame)
 		
-		let sizeImage = CGSize(width: frame.size.width, height: frame.size.height)
+		let sizeImage = CGSize(width: frame.size.width - 5, height: frame.size.height - 5)
 		imageView.frame.size = sizeImage
-		imageView.center = center
+		imageView.image = image
+		addSubview(imageView)
 		
-		
-		
-		// imageView.frame.size = CGSize(width: image.size.width + 10, height: image.size.height + 30)
 		let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
 		addGestureRecognizer(tapGesture)
-		addSubview(imageView)
 	}
 	
 	
@@ -83,43 +67,37 @@ public class HMenuButton: UIView {
 
 
 
-public class HMenuItem: HMenuButton {
+public class WTSubButton: WTMenuButton {
 	
 	public var startPosition: CGPoint?
-	public var endPosition: CGPoint? {
-		didSet {
-			
-		}
-	}
+	public var endPosition: CGPoint?
 	
 	
 	
-	convenience init(tagNumber: Int, image: UIImage, size: CGSize) {
-		self.init(image: image, size: size)
+	convenience init(tagNumber: Int, image: UIImage, frame: CGRect) {
+		self.init(image: image, frame: frame)
 		self.tag = tagNumber
-		
-		
 	}
 }
 
 
 
-public class HMainButton: HMenuButton {
+public class WTMainButton: WTMenuButton {
 	
-	private var selectedImage: UIImage?
-	private var unselectedImage: UIImage?
+	private var expandedImage: UIImage?
+	private var defaultImage: UIImage?
 	
 	
 	
-	convenience init(image: UIImage, selectedImage: UIImage? = nil, size: CGSize) {
-		self.init(image: image, size: size)
-		self.selectedImage = selectedImage
-		self.unselectedImage = image
+	convenience init(image: UIImage, expandedImage: UIImage? = nil, frame: CGRect) {
+		self.init(image: image, frame: frame)
+		self.expandedImage = expandedImage
+		self.defaultImage = image
 	}
 	
 	
 	
 	func markButtonAsSelected(isSelected: Bool) {
-		image = isSelected ? selectedImage : unselectedImage
+		image = isSelected ? expandedImage : defaultImage
 	}
 }
